@@ -71,7 +71,8 @@ class _HomeContentState extends State<HomeContent> {
                     width: double.infinity,
                     decoration: const BoxDecoration(
                       image: DecorationImage(
-                        image: AssetImage('assets/images/hero-image.jpg'),
+                        image:
+                            AssetImage('assets/9.jpeg'), // Updated image path
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -190,7 +191,7 @@ class _HomeContentState extends State<HomeContent> {
                     style: TextStyle(
                       fontSize: 24,
                       fontFamily: 'Montserrat-Bold',
-                      color: Colors.brown,
+                      color: Colors.brown, // Fixed from Cards.brown
                     ),
                   ),
                   const SizedBox(height: 15),
@@ -227,9 +228,9 @@ class _HomeContentState extends State<HomeContent> {
                           gridDelegate:
                               const SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,
-                            mainAxisSpacing: 10,
-                            crossAxisSpacing: 10,
-                            childAspectRatio: 0.7,
+                            mainAxisSpacing: 15, // Increased spacing
+                            crossAxisSpacing: 15, // Increased spacing
+                            childAspectRatio: 0.85, // Adjusted ratio (was 0.7)
                           ),
                           itemCount: products.length,
                           itemBuilder: (context, index) {
