@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-
-import 'splash_page_view.dart';
+import 'login_page_view.dart';
+import 'home_page_view.dart';
+import '../services/auth_service.dart';
 
 class OnboardingPageView extends StatefulWidget {
   const OnboardingPageView({super.key});
@@ -12,6 +13,7 @@ class OnboardingPageView extends StatefulWidget {
 class _OnboardingPageViewState extends State<OnboardingPageView> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
+  final AuthService authService = AuthService();
 
   final List<Map<String, String>> _onboardingData = [
     {
@@ -32,10 +34,17 @@ class _OnboardingPageViewState extends State<OnboardingPageView> {
   ];
 
   void _onSkip() {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const SplashPageView()),
-    );
+    if (authService.isAuthenticated()) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomePageView()),
+      );
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginPageView()),
+      );
+    }
   }
 
   void _onNext() {
@@ -47,6 +56,12 @@ class _OnboardingPageViewState extends State<OnboardingPageView> {
         curve: Curves.easeInOut,
       );
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    authService.loadToken(); // Load token on page init
   }
 
   @override
@@ -75,25 +90,23 @@ class _OnboardingPageViewState extends State<OnboardingPageView> {
           ),
           // Text content and navigation buttons
           Positioned(
-            bottom: 100, // Adjusts position for text at the lower part
+            bottom: 100,
             left: 20,
             right: 20,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Title
                 Text(
                   _onboardingData[_currentPage]['title']!,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    fontFamily: 'Montserrat-Bold', // Montserrat-Bold
+                    fontFamily: 'Montserrat-Bold',
                     color: Colors.black,
                   ),
                 ),
                 const SizedBox(height: 10),
-                // Description
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Text(
@@ -101,7 +114,7 @@ class _OnboardingPageViewState extends State<OnboardingPageView> {
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontSize: 16,
-                      fontFamily: 'Montserrat-Bold', // Montserrat-Bold
+                      fontFamily: 'Montserrat-Bold',
                       color: Colors.black87,
                     ),
                   ),
@@ -123,7 +136,7 @@ class _OnboardingPageViewState extends State<OnboardingPageView> {
                     'Skip',
                     style: TextStyle(
                       fontSize: 16,
-                      fontFamily: 'Montserrat-Italic', // Montserrat-Italic
+                      fontFamily: 'Montserrat-Italic',
                       color: Colors.black87,
                     ),
                   ),
@@ -152,7 +165,7 @@ class _OnboardingPageViewState extends State<OnboardingPageView> {
                         : 'Next',
                     style: const TextStyle(
                       fontSize: 16,
-                      fontFamily: 'Montserrat-Italic', // Montserrat-Italic
+                      fontFamily: 'Montserrat-Italic',
                       color: Colors.black,
                     ),
                   ),

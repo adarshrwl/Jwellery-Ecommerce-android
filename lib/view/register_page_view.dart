@@ -11,17 +11,23 @@ class RegisterPageView extends StatefulWidget {
 }
 
 class _RegisterPageViewState extends State<RegisterPageView> {
-  // Controllers for user input
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
       TextEditingController();
+  final AuthService authService = AuthService(); // Get the singleton instance
 
   bool isLoading = false;
   String? errorMessage;
 
-  // This method calls the register endpoint
+  @override
+  void initState() {
+    super.initState();
+    // Ensure token is loaded
+    authService.loadToken();
+  }
+
   Future<void> _register() async {
     setState(() {
       isLoading = true;
@@ -33,7 +39,6 @@ class _RegisterPageViewState extends State<RegisterPageView> {
     final password = passwordController.text;
     final confirmPassword = confirmPasswordController.text;
 
-    // Basic validation: check that passwords match
     if (password != confirmPassword) {
       setState(() {
         errorMessage = 'Passwords do not match.';
@@ -43,13 +48,10 @@ class _RegisterPageViewState extends State<RegisterPageView> {
     }
 
     try {
-      // Call your register endpoint
-      final response = await AuthService.register(name, email, password);
+      final response = await authService.register(name, email, password);
 
-      // If the server returns a token, registration succeeded
       if (response['token'] != null) {
-        // Optionally store the token if needed
-        // Navigate to the home page
+        // Token is already stored in SharedPreferences by AuthService
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const HomePageView()),
@@ -86,7 +88,6 @@ class _RegisterPageViewState extends State<RegisterPageView> {
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: SingleChildScrollView(
-          // Use scroll if the keyboard might overflow
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -157,7 +158,6 @@ class _RegisterPageViewState extends State<RegisterPageView> {
                 obscureText: true,
               ),
               const SizedBox(height: 30),
-              // Display an error message if one exists
               if (errorMessage != null)
                 Text(
                   errorMessage!,

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../models/product.dart';
 import '../widgets/product_card.dart';
+import '../services/auth_service.dart';
 
 class CategoriesPage extends StatefulWidget {
   const CategoriesPage({Key? key}) : super(key: key);
@@ -16,6 +17,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
   List<Product> products = [];
   bool isLoading = false;
   String? error;
+  final AuthService authService = AuthService();
 
   @override
   void initState() {
@@ -24,6 +26,14 @@ class _CategoriesPageState extends State<CategoriesPage> {
   }
 
   Future<void> fetchProducts([String? category]) async {
+    if (!authService.isAuthenticated()) {
+      setState(() {
+        error = 'Please log in to view products';
+        isLoading = false;
+      });
+      return;
+    }
+
     setState(() {
       isLoading = true;
       error = null;
@@ -34,8 +44,10 @@ class _CategoriesPageState extends State<CategoriesPage> {
       if (category != null) {
         url += '?category=${Uri.encodeComponent(category)}';
       }
-      final response =
-          await http.get(Uri.parse(url)).timeout(const Duration(seconds: 10));
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {'Authorization': 'Bearer ${authService.token}'},
+      ).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         List<dynamic> data = jsonDecode(response.body);

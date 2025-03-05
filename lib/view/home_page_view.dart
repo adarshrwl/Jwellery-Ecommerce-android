@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'home_content.dart';
+import 'login_page_view.dart';
 import 'categories_page.dart';
 import 'top_rated_page.dart';
 import 'cart_page.dart';
 import 'profile_page.dart';
+import '../services/auth_service.dart';
+import './home_content.dart';
 
 class HomePageView extends StatefulWidget {
   const HomePageView({Key? key}) : super(key: key);
@@ -14,18 +16,35 @@ class HomePageView extends StatefulWidget {
 
 class _HomePageViewState extends State<HomePageView> {
   int _currentIndex = 0;
+  final AuthService authService = AuthService();
 
   // List of pages for each tab
   final List<Widget> _pages = const [
     HomeContent(), // Home page content
     CategoriesPage(), // Categories page
-    TopRatedPage(), // Top Rated page
+    TopRatedProductsPage(), // Top Rated page
     CartPage(), // Cart page
     ProfilePage(), // Profile page
   ];
 
   @override
+  void initState() {
+    super.initState();
+    authService.loadToken(); // Load token on page init
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (!authService.isAuthenticated()) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginPageView()),
+        );
+      });
+      return const SizedBox.shrink(); // Placeholder while redirecting
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF6D4C41),
@@ -38,6 +57,18 @@ class _HomePageViewState extends State<HomePageView> {
           ),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              await authService.logout();
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginPageView()),
+              );
+            },
+          ),
+        ],
       ),
       body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(

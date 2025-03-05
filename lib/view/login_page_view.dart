@@ -13,9 +13,17 @@ class LoginPageView extends StatefulWidget {
 class _LoginPageViewState extends State<LoginPageView> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final AuthService authService = AuthService(); // Get the singleton instance
 
   bool isLoading = false;
   String? errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    // Ensure token is loaded
+    authService.loadToken();
+  }
 
   Future<void> _login() async {
     setState(() {
@@ -24,14 +32,14 @@ class _LoginPageViewState extends State<LoginPageView> {
     });
 
     try {
-      final response = await AuthService.login(
+      final response = await authService.login(
         emailController.text.trim(),
         passwordController.text.trim(),
       );
       print(response);
 
       if (response['token'] != null) {
-        // Optionally store the token (e.g., in secure storage) here before navigating.
+        // Token is already stored in SharedPreferences by AuthService
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const HomePageView()),
@@ -149,8 +157,7 @@ class _LoginPageViewState extends State<LoginPageView> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const RegisterPageView(),
-                  ),
+                      builder: (context) => const RegisterPageView()),
                 );
               },
               child: const Text(
