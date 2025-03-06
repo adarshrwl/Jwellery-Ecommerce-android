@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
-  static const String baseUrl = 'http://localhost:5000/api/auth';
+  static const String baseUrl = 'http://10.0.2.2:5000/api/auth';
   // For Android Emulator:
   // static const String baseUrl = 'http://10.0.2.2:5000/api/auth';
 
@@ -65,12 +65,14 @@ class AuthService {
         final errorResponse = jsonDecode(response.body);
         throw Exception(errorResponse['msg'] ?? 'Login failed');
       } catch (e) {
-        throw Exception('Server returned an unexpected response: ${response.body}');
+        throw Exception(
+            'Server returned an unexpected response: ${response.body}');
       }
     }
   }
 
-  Future<Map<String, dynamic>> register(String name, String email, String password) async {
+  Future<Map<String, dynamic>> register(
+      String name, String email, String password) async {
     final url = Uri.parse('$baseUrl/signup');
     final response = await http.post(
       url,
@@ -90,7 +92,8 @@ class AuthService {
         final errorResponse = jsonDecode(response.body);
         throw Exception(errorResponse['msg'] ?? 'Registration failed');
       } catch (e) {
-        throw Exception('Server returned an unexpected response: ${response.body}');
+        throw Exception(
+            'Server returned an unexpected response: ${response.body}');
       }
     }
   }

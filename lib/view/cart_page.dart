@@ -15,7 +15,7 @@ class _CartPageState extends State<CartPage> {
   List<CartItem> cart = [];
   bool isLoading = true;
   String message = '';
-  final String baseUrl = 'http://localhost:5000';
+  final String baseUrl = 'http://10.0.2.2:5000';
   final AuthService authService = AuthService();
 
   @override
@@ -329,7 +329,7 @@ class CartItemsList extends StatelessWidget {
           final item = cart[index];
           final imageUrl = item.image.startsWith('http')
               ? item.image
-              : 'http://localhost:5000${item.image}';
+              : 'http://10.0.2.2:5000${item.image}';
           return Padding(
             padding: const EdgeInsets.all(16),
             child: Row(

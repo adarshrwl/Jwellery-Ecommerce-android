@@ -16,7 +16,7 @@ class _HomeContentState extends State<HomeContent> {
 
   Future<List<Product>> fetchProducts() async {
     try {
-      final url = Uri.parse('http://localhost:5000/api/products');
+      final url = Uri.parse('http://10.0.2.2:5000/api/products');
       final response = await http.get(url).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {

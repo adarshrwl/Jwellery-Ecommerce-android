@@ -40,7 +40,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
     });
 
     try {
-      String url = 'http://localhost:5000/api/products';
+      String url = 'http://10.0.2.2:5000/api/products';
       if (category != null) {
         url += '?category=${Uri.encodeComponent(category)}';
       }
@@ -86,13 +86,14 @@ class _CategoriesPageState extends State<CategoriesPage> {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
-                    _buildCategoryButton('AD', 'assets/ad.png', 'AD Earrings'),
                     _buildCategoryButton(
-                        'Diamond', 'assets/di.png', 'Diamond Earrings'),
+                        'AD', 'assets/images/ad.png', 'AD Earrings'),
                     _buildCategoryButton(
-                        'Gold', 'assets/go.png', 'Gold Earrings'),
+                        'Diamond', 'assets/images/di.png', 'Diamond Earrings'),
                     _buildCategoryButton(
-                        'Indian', 'assets/in.png', 'Indian Earrings'),
+                        'Gold', 'assets/images/go.png', 'Gold Earrings'),
+                    _buildCategoryButton(
+                        'Indian', 'assets/images/in.png', 'Indian Earrings'),
                   ],
                 ),
               ),

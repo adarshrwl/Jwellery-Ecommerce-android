@@ -35,7 +35,7 @@ class _TopRatedProductsPageState extends State<TopRatedProductsPage> {
 
     try {
       final response = await http.get(
-        Uri.parse('http://localhost:5000/api/products'),
+        Uri.parse('http://10.0.2.2:5000/api/products'),
         headers: {'Authorization': 'Bearer ${authService.token}'},
       ).timeout(const Duration(seconds: 10));
 
