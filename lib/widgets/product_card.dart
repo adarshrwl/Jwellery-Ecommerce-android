@@ -15,129 +15,137 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Prepend backend URL if needed
+    // Calculate card width for 2 per row
+    final screenWidth = MediaQuery.of(context).size.width;
+    final cardWidth = (screenWidth / 2) - 16;
+
     final imageUrl = product.image.startsWith('http')
         ? product.image
         : 'http://10.0.2.2:5000${product.image}';
 
-    return Card(
-      elevation: 4,
-      margin: const EdgeInsets.all(8),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // Product image
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-            child: AspectRatio(
-              aspectRatio:
-                  16 / 9, // Adjust aspect ratio for better image display
+    return Container(
+      width: cardWidth,
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      child: Card(
+        clipBehavior: Clip.antiAlias, // Ensures no content overflows
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min, // Important to prevent overflow
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Image with fixed height
+            SizedBox(
+              height: 107, // Reduced fixed height
               child: Image.network(
                 imageUrl,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) => Container(
-                  color: Colors.grey[300],
-                  alignment: Alignment.center,
-                  child: const Icon(Icons.broken_image,
-                      size: 40, color: Colors.grey),
+                  color: Colors.grey[200],
+                  child:
+                      const Icon(Icons.image_not_supported, color: Colors.grey),
                 ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Product name
-                Text(
-                  product.name,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Montserrat-Bold',
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 8),
-                // Product price
-                Text(
-                  "Rs. ${product.price.toStringAsFixed(2)}",
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.green,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                // Product rating and reviews
-                Row(
-                  children: [
-                    const Icon(Icons.star, color: Colors.amber, size: 16),
-                    const SizedBox(width: 4),
-                    Text(
-                      "${product.averageRating.toStringAsFixed(1)}/5",
-                      style: const TextStyle(fontSize: 14),
+
+            // Product info - kept minimal
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Product name - single line
+                  Text(
+                    product.name,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
                     ),
-                    const SizedBox(width: 8),
-                    Text(
-                      "(${product.reviewCount} reviews)",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[600],
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 2),
+
+                  // Price and rating in one row
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Rs.${product.price.toStringAsFixed(0)}",
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.green,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                      Row(
+                        children: [
+                          const Icon(Icons.star, color: Colors.amber, size: 12),
+                          Text(
+                            " ${product.averageRating.toStringAsFixed(1)}",
+                            style: const TextStyle(fontSize: 11),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-          // Buttons for actions
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            child: Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: onViewDetails,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+
+            // Action buttons - simplified
+            Padding(
+              padding: const EdgeInsets.only(left: 8, right: 8, bottom: 8),
+              child: Row(
+                children: [
+                  // View button with icon only
+                  Expanded(
+                    child: InkWell(
+                      onTap: onViewDetails,
+                      child: Container(
+                        height: 30,
+                        decoration: BoxDecoration(
+                          color: Colors.blue.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: const Center(
+                          child: Icon(
+                            Icons.visibility_outlined,
+                            size: 16,
+                            color: Colors.blue,
+                          ),
+                        ),
                       ),
                     ),
-                    child: const Text(
-                      "View Details",
-                      style: TextStyle(fontSize: 14, color: Colors.white),
-                    ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: onAddToCart,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                  const SizedBox(width: 8),
+                  // Cart button with icon only
+                  Expanded(
+                    child: InkWell(
+                      onTap: onAddToCart,
+                      child: Container(
+                        height: 30,
+                        decoration: BoxDecoration(
+                          color: Colors.green.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: const Center(
+                          child: Icon(
+                            Icons.shopping_cart_outlined,
+                            size: 16,
+                            color: Colors.green,
+                          ),
+                        ),
                       ),
                     ),
-                    child: const Text(
-                      "Add to Cart",
-                      style: TextStyle(fontSize: 14, color: Colors.white),
-                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
