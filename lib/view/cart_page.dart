@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../services/auth_service.dart';
 import './login_page_view.dart';
+import './payment_demo.dart'; // Import the CheckoutPage
 
 class CartPage extends StatefulWidget {
   const CartPage({Key? key}) : super(key: key);
@@ -341,7 +342,21 @@ class _CartPageState extends State<CartPage> {
             width: 150,
             child: ElevatedButton(
               onPressed: () {
-                // Implement checkout navigation
+                if (cart.isNotEmpty && authService.isAuthenticated()) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const PaymentDemoPage()),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Please add items to cart or log in.'),
+                      duration: Duration(seconds: 2),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: primaryColor,
@@ -366,7 +381,7 @@ class _CartPageState extends State<CartPage> {
   }
 }
 
-// Login Dialog - updated with new color scheme
+// Login Dialog - unchanged
 class LoginDialog extends StatefulWidget {
   final Color primaryColor;
 
@@ -466,7 +481,7 @@ class _LoginDialogState extends State<LoginDialog> {
   }
 }
 
-// Updated cart item tile with new color scheme
+// CartItemTile - unchanged
 class CartItemTile extends StatelessWidget {
   final CartItem item;
   final Function(String, int) onUpdateQuantity;
@@ -506,7 +521,6 @@ class CartItemTile extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Product Image
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: Image.network(
@@ -525,10 +539,7 @@ class CartItemTile extends StatelessWidget {
                 ),
               ),
             ),
-
             const SizedBox(width: 12),
-
-            // Product Details
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -556,7 +567,6 @@ class CartItemTile extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // Quantity Adjuster
                       Container(
                         decoration: BoxDecoration(
                           color: Colors.grey[100],
@@ -566,7 +576,6 @@ class CartItemTile extends StatelessWidget {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            // Decrease button
                             InkWell(
                               onTap: () => onUpdateQuantity(item.productId,
                                   item.quantity > 1 ? item.quantity - 1 : 1),
@@ -581,8 +590,6 @@ class CartItemTile extends StatelessWidget {
                                 ),
                               ),
                             ),
-
-                            // Quantity display
                             Container(
                               alignment: Alignment.center,
                               width: 30,
@@ -594,8 +601,6 @@ class CartItemTile extends StatelessWidget {
                                 ),
                               ),
                             ),
-
-                            // Increase button
                             InkWell(
                               onTap: () => onUpdateQuantity(
                                   item.productId, item.quantity + 1),
@@ -613,8 +618,6 @@ class CartItemTile extends StatelessWidget {
                           ],
                         ),
                       ),
-
-                      // Remove button
                       IconButton(
                         icon: const Icon(
                           Icons.delete_outline,
@@ -637,7 +640,7 @@ class CartItemTile extends StatelessWidget {
   }
 }
 
-// Improved Order Summary Card with new color scheme
+// OrderSummaryCard - unchanged
 class OrderSummaryCard extends StatelessWidget {
   final List<CartItem> cart;
   final Color primaryColor;

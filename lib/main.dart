@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:mobile_final_project/view/onboard_page_view.dart';
 import 'package:mobile_final_project/services/auth_service.dart';
 import './view/home_page_view.dart';
+import './view/payment_demo.dart';
 
 void main() async {
   // Ensure Flutter bindings are initialized for async operations
   WidgetsFlutterBinding.ensureInitialized();
+  Stripe.publishableKey =
+      'pk_test_51Qy9TFICDuzmFrlVIFbeDOoHj8e6fHSQlnYw3KdeDJPJHaDgRvuM0C5jR9rryMkrUxhatYPhJijRIN59Jb1qFeRn00lLB4mzmW';
 
   // Initialize AuthService to load the token from SharedPreferences
   await AuthService().loadToken();

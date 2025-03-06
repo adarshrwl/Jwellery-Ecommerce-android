@@ -128,8 +128,8 @@ class _HomeContentState extends State<HomeContent> {
                     width: double.infinity,
                     decoration: const BoxDecoration(
                       image: DecorationImage(
-                        image:
-                            AssetImage('assets/9.jpeg'), // Updated image path
+                        image: AssetImage(
+                            'assets/images/9.jpeg'), // Updated image path
                         fit: BoxFit.cover,
                       ),
                     ),
