@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../models/product.dart';
 import '../widgets/product_card.dart';
+import '../services/auth_service.dart';
+import 'ProductDescription.dart';
 
 class HomeContent extends StatefulWidget {
   const HomeContent({Key? key}) : super(key: key);
@@ -44,16 +46,71 @@ class _HomeContentState extends State<HomeContent> {
 
   void _handleViewDetails(Product product) {
     print("View details for: ${product.name}");
+    // Navigate to product details page
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => ProductDetails(productId: product.id),
+      ),
+    );
   }
 
   void _handleAddToCart(Product product) {
     print("Add to cart: ${product.name}");
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text("${product.name} added to cart!"),
-        duration: const Duration(seconds: 2),
-      ),
-    );
+
+    final authService = AuthService();
+    if (!authService.isAuthenticated()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Please log in to add items to the cart."),
+          duration: Duration(seconds: 3),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    // Call API to add product to cart
+    http
+        .post(
+      Uri.parse('http://10.0.2.2:5000/api/cart'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${authService.token}',
+      },
+      body: jsonEncode({
+        'productId': product.id,
+        'name': product.name,
+        'price': product.price,
+        'image': product.image,
+      }),
+    )
+        .then((response) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("${product.name} added to cart!"),
+            duration: const Duration(seconds: 2),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Failed to add to cart. Please try again."),
+            duration: const Duration(seconds: 2),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }).catchError((error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Error: ${error.toString()}"),
+          duration: const Duration(seconds: 3),
+          backgroundColor: Colors.red,
+        ),
+      );
+    });
   }
 
   @override

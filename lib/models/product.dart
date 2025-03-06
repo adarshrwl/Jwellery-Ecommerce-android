@@ -1,39 +1,77 @@
+class Review {
+  final String id;
+  final String userId;
+  final String username;
+  final double rating;
+  final String comment;
+  final DateTime createdAt;
+
+  Review({
+    required this.id,
+    required this.userId,
+    required this.username,
+    required this.rating,
+    required this.comment,
+    required this.createdAt,
+  });
+
+  factory Review.fromJson(Map<String, dynamic> json) {
+    return Review(
+      id: json['_id'] ?? json['id'] ?? '',
+      userId: json['userId'] ?? '',
+      username: json['username'] ?? 'Anonymous',
+      rating: (json['rating'] ?? 0).toDouble(),
+      comment: json['comment'] ?? '',
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'])
+          : DateTime.now(),
+    );
+  }
+}
+
 class Product {
   final String id;
   final String name;
   final double price;
   final String image;
+  final String description;
   final double averageRating;
-  final int reviewCount;
+  final List<Review>? reviews;
 
   Product({
     required this.id,
     required this.name,
     required this.price,
     required this.image,
+    required this.description,
     required this.averageRating,
-    required this.reviewCount,
+    this.reviews,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
-    double avgRating = 0;
-    int reviewsCount = 0;
-    if (json['reviews'] != null &&
-        json['reviews'] is List &&
-        (json['reviews'] as List).isNotEmpty) {
-      List reviews = json['reviews'];
-      reviewsCount = reviews.length;
-      double sum = reviews.fold(
-          0, (prev, el) => prev + (el['rating'] is num ? el['rating'] : 0));
-      avgRating = sum / reviewsCount;
+    // Parse reviews if available
+    List<Review>? reviewsList;
+    if (json['reviews'] != null) {
+      reviewsList = (json['reviews'] as List)
+          .map((reviewJson) => Review.fromJson(reviewJson))
+          .toList();
     }
+
+    // Calculate average rating if not provided but reviews are available
+    double avgRating = json['averageRating']?.toDouble() ?? 0.0;
+    if (avgRating == 0.0 && reviewsList != null && reviewsList.isNotEmpty) {
+      avgRating = reviewsList.fold(0.0, (sum, review) => sum + review.rating) /
+          reviewsList.length;
+    }
+
     return Product(
-      id: json['_id'] ?? '',
+      id: json['_id'] ?? json['id'] ?? '',
       name: json['name'] ?? '',
-      price: json['price'] is num ? (json['price'] as num).toDouble() : 0,
+      price: (json['price'] ?? 0).toDouble(),
       image: json['image'] ?? '',
+      description: json['description'] ?? '',
       averageRating: avgRating,
-      reviewCount: reviewsCount,
+      reviews: reviewsList,
     );
   }
 }

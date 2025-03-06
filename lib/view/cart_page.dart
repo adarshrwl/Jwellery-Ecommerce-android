@@ -247,19 +247,6 @@ class _CartPageState extends State<CartPage> {
             style: TextStyle(fontSize: 22, color: textColor),
           ),
           const SizedBox(height: 16),
-          ElevatedButton.icon(
-            onPressed: () {
-              Navigator.pop(context); // Navigate back to product listing
-            },
-            icon: const Icon(Icons.shop),
-            label: const Text('Continue Shopping'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: primaryColor,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-          ),
         ],
       ),
     );
